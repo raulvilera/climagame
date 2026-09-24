@@ -1,7 +1,11 @@
 import { createServer } from 'node:http';
+import { readFile } from 'node:fs/promises';
+import { extname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { WebSocketServer } from 'ws';
 
 const port = Number(process.env.PORT || 8787);
+const root = fileURLToPath(new URL('..', import.meta.url));
 const rooms = new Map();
 const questionsByRound = new Map();
 
@@ -25,9 +29,24 @@ function sendState(code) {
   if (room) broadcast(code, { type: 'leaderboard', players: snapshot(room), round: room.round, started: room.started });
 }
 
-const server = createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
-  res.end(JSON.stringify({ service: 'ClimaGame multiplayer', rooms: rooms.size }));
+const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8' };
+const server = createServer(async (req, res) => {
+  const pathname = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`).pathname;
+  if (pathname === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify({ service: 'ClimaGame multiplayer', rooms: rooms.size }));
+    return;
+  }
+  const requested = pathname === '/' ? '/dist/index.html' : `/dist${pathname}`;
+  try {
+    const file = await readFile(join(root, requested));
+    res.writeHead(200, { 'Content-Type': mime[extname(requested)] || 'application/octet-stream' });
+    res.end(file);
+  } catch {
+    const file = await readFile(join(root, 'dist/index.html'));
+    res.writeHead(200, { 'Content-Type': mime['.html'] });
+    res.end(file);
+  }
 });
 const wss = new WebSocketServer({ server });
 
