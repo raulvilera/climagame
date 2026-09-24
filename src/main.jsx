@@ -38,7 +38,7 @@ function App() {
   }
   function connectRoom() {
     const protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-    const url = import.meta.env.VITE_WS_URL || `${protocol}://${location.hostname}:8787`;
+    const url = import.meta.env.VITE_WS_URL || `${protocol}://${location.host}`;
     try {
       const ws = new WebSocket(url); socketRef.current = ws;
       ws.onopen = () => { setConnected(true); ws.send(JSON.stringify({ type:'join', room:roomCode, name:student.name })); };
