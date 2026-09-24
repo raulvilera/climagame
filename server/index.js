@@ -1,0 +1,55 @@
+import { createServer } from 'node:http';
+import { WebSocketServer } from 'ws';
+
+const port = Number(process.env.PORT || 8787);
+const rooms = new Map();
+const questionsByRound = new Map();
+
+function roomFor(code) {
+  if (!rooms.has(code)) rooms.set(code, { players: new Map(), round: 0, question: null, started: false });
+  return rooms.get(code);
+}
+function broadcast(code, payload) {
+  const room = rooms.get(code);
+  if (!room) return;
+  const message = JSON.stringify(payload);
+  for (const player of room.players.values()) if (player.socket.readyState === 1) player.socket.send(message);
+}
+function snapshot(room) {
+  return [...room.players.values()]
+    .map(({ id, name, score, answered }) => ({ id, name, score, answered }))
+    .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+}
+function sendState(code) {
+  const room = rooms.get(code);
+  if (room) broadcast(code, { type: 'leaderboard', players: snapshot(room), round: room.round, started: room.started });
+}
+
+const server = createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+  res.end(JSON.stringify({ service: 'ClimaGame multiplayer', rooms: rooms.size }));
+});
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', socket => {
+  let roomCode; let playerId;
+  socket.on('message', raw => {
+    let data; try { data = JSON.parse(raw.toString()); } catch { return; }
+    if (data.type === 'join') {
+      roomCode = String(data.room || 'AULA-8').toUpperCase().slice(0, 12);
+      playerId = crypto.randomUUID();
+      const room = roomFor(roomCode);
+      room.players.set(playerId, { id: playerId, socket, name: String(data.name || 'Explorador'), score: 0, answered: false });
+      socket.send(JSON.stringify({ type: 'joined', id: playerId, room: roomCode }));
+      sendState(roomCode);
+    }
+    if (!roomCode || !playerId) return;
+    const room = rooms.get(roomCode); const player = room?.players.get(playerId);
+    if (!room || !player) return;
+    if (data.type === 'start') { room.started = true; room.round = Number(data.round || 1); room.question = data.questionId; for (const p of room.players.values()) p.answered = false; broadcast(roomCode, { type: 'round', round: room.round, questionId: room.question }); sendState(roomCode); }
+    if (data.type === 'answer') { if (player.answered) return; player.answered = true; if (data.correct) player.score += Math.max(100, Number(data.points || 100)); sendState(roomCode); }
+    if (data.type === 'reset') { for (const p of room.players.values()) { p.score = 0; p.answered = false; } room.round = 0; room.started = false; sendState(roomCode); }
+  });
+  socket.on('close', () => { if (roomCode && rooms.has(roomCode)) { rooms.get(roomCode).players.delete(playerId); sendState(roomCode); } });
+});
+server.listen(port, '0.0.0.0', () => console.log(`ClimaGame multiplayer on :${port}`));
