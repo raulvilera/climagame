@@ -50,7 +50,19 @@ function App() {
     if (locked) return;
     const correct = choice === current.answer; const points = correct ? 100 + Math.max(0, 30 - answers * 2) : 0;
     setSelected(choice); setLocked(true); setAnswers(a => a + 1); if (correct) setScore(s => s + points);
-    socketRef.current?.send(JSON.stringify({ type:'answer', correct, points }));
+    socketRef.current?.send(JSON.stringify({
+      type: 'answer',
+      correct,
+      points,
+      series: student.series,
+      call: student.call,
+      email: student.email,
+      theme: current.theme,
+      lesson: current.lesson,
+      question: current.q,
+      selectedOption: current.options[choice],
+      correctOption: current.options[current.answer]
+    }));
   }
   function next() { setIndex(i => i + 1); setSelected(null); setLocked(false); }
   const rank = [...leaderboard, { id:sessionId.current, name:student.name || 'Você', score }].sort((a,b) => b.score - a.score);

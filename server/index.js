@@ -8,6 +8,21 @@ const port = Number(process.env.PORT || 8787);
 const root = fileURLToPath(new URL('..', import.meta.url));
 const rooms = new Map();
 const questionsByRound = new Map();
+const sheetsWebhookUrl = process.env.SHEETS_WEBHOOK_URL;
+const sheetsWebhookSecret = process.env.SHEETS_WEBHOOK_SECRET;
+
+async function recordAnswer(data) {
+  if (!sheetsWebhookUrl || !sheetsWebhookSecret) return;
+  try {
+    await fetch(sheetsWebhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...data, token: sheetsWebhookSecret })
+    });
+  } catch (error) {
+    console.error('Falha ao registrar resposta na planilha:', error.message);
+  }
+}
 
 function roomFor(code) {
   if (!rooms.has(code)) rooms.set(code, { players: new Map(), round: 0, question: null, started: false });
@@ -66,7 +81,26 @@ wss.on('connection', socket => {
     const room = rooms.get(roomCode); const player = room?.players.get(playerId);
     if (!room || !player) return;
     if (data.type === 'start') { room.started = true; room.round = Number(data.round || 1); room.question = data.questionId; for (const p of room.players.values()) p.answered = false; broadcast(roomCode, { type: 'round', round: room.round, questionId: room.question }); sendState(roomCode); }
-    if (data.type === 'answer') { if (player.answered) return; player.answered = true; if (data.correct) player.score += Math.max(100, Number(data.points || 100)); sendState(roomCode); }
+    if (data.type === 'answer') {
+      if (player.answered) return;
+      player.answered = true;
+      if (data.correct) player.score += Math.max(100, Number(data.points || 100));
+      void recordAnswer({
+        name: player.name,
+        series: data.series,
+        call: data.call,
+        email: data.email,
+        room: roomCode,
+        theme: data.theme,
+        lesson: data.lesson,
+        question: data.question,
+        selectedOption: data.selectedOption,
+        correctOption: data.correctOption,
+        correct: Boolean(data.correct),
+        points: Number(data.points || 0)
+      });
+      sendState(roomCode);
+    }
     if (data.type === 'reset') { for (const p of room.players.values()) { p.score = 0; p.answered = false; } room.round = 0; room.started = false; sendState(roomCode); }
   });
   socket.on('close', () => { if (roomCode && rooms.has(roomCode)) { rooms.get(roomCode).players.delete(playerId); sendState(roomCode); } });

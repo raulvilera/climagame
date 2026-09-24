@@ -2,3 +2,8 @@ node_modules/
 dist/
 .env
 .DS_Store
+.sheets-webhook-secret
+.typst-*
+apps-script-content.json
+tutorial-climagame.pdf
+tutorial-climagame.typ
