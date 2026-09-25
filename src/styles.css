@@ -10,3 +10,14 @@
 .hero .planet-art .orbit,.hero .planet-art .star{display:none}
 @media(max-width:800px){.hero .planet-art{width:52vw;min-width:260px;height:auto;margin-right:-14px;transform:none}}
 @media(max-width:500px){.hero .planet-art{width:calc(100vw - 32px);height:auto;min-width:0;right:-8px;top:100px;opacity:.58;border-radius:10px}.hero .planet-art img{object-fit:cover}}
+
+/* Alternativas com acabamento de botão em alto-relevo e estado pressionado. */
+.answer{font-weight:700;background:linear-gradient(180deg,#173b59 0%,#0d2943 100%);border:1px solid #396581;border-bottom:4px solid #061827;box-shadow:0 6px 0 #061827,0 10px 18px rgba(0,0,0,.24);transform:translateY(-3px);transition:transform .12s ease,box-shadow .12s ease,background .12s ease,color .12s ease,border-color .12s ease}
+.answer:hover:not(:disabled){background:linear-gradient(180deg,#1d496b 0%,#123653 100%);border-color:var(--teal);box-shadow:0 7px 0 #061827,0 12px 20px rgba(0,0,0,.28);transform:translateY(-5px)}
+.answer:active:not(:disabled){transform:translateY(1px);box-shadow:0 2px 0 #061827,0 4px 8px rgba(0,0,0,.22)}
+.answer .answer-letter{font-weight:800;color:#d9efff;background:#245273}
+.answer.selected{background:#071b30;color:#fff;font-weight:800;border-color:#315b78;border-bottom-color:#020b14;box-shadow:inset 0 3px 8px rgba(0,0,0,.5),0 1px 0 #020b14;transform:translateY(2px)}
+.answer.selected .answer-letter{color:#fff;font-weight:800;background:#123653}
+.answer.selected.correct,.answer.selected.wrong{background:#071b30;color:#fff;border-color:#315b78;border-bottom-color:#020b14}
+.answer.selected.correct .answer-letter,.answer.selected.wrong .answer-letter{color:#fff;background:#123653}
+.answer.dim{transform:translateY(0);box-shadow:none}
