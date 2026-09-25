@@ -20,8 +20,8 @@ function App() {
   const [connected, setConnected] = useState(false);
   const socketRef = useRef(null);
   const sessionId = useRef(crypto.randomUUID());
-  const stageThemes = useMemo(() => filter === 'Todos os temas' ? themes : [filter], [filter]);
-  const stageQuestions = useMemo(() => questions.filter(q => q.theme === stageThemes[stageIndex]), [stageThemes, stageIndex]);
+  const stageThemes = useMemo(() => filter === 'Todos os temas' ? ['Todos os temas'] : [filter], [filter]);
+  const stageQuestions = useMemo(() => filter === 'Todos os temas' ? questions : questions.filter(q => q.theme === filter), [filter]);
   const current = stageQuestions[questionIndex % Math.max(stageQuestions.length, 1)] || questions[0];
   const currentImage = questionImages[questions.indexOf(current)];
   const isLastQuestionOfStage = questionIndex === stageQuestions.length - 1;
