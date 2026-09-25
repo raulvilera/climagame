@@ -26,3 +26,6 @@
 body{position:relative;background:radial-gradient(circle at 75% 5%,#123655 0,transparent 32%),radial-gradient(circle at 0 100%,#162b45 0,transparent 30%),#07111f}
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(rgba(4,13,28,.7),rgba(4,13,28,.82)),url('/assets/astronomy-background.gif') center/cover no-repeat;opacity:.52}
 #root{position:relative;z-index:1}
+
+.level-badge{display:inline-flex;align-items:center;padding:7px 10px;border:1px solid rgba(255,200,87,.38);border-radius:4px;color:var(--yellow);background:rgba(255,200,87,.1);font-weight:700}
+.level-bonus{display:block;margin-top:8px;color:var(--yellow);font-weight:800;font-size:12px}

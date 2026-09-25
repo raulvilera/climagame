@@ -85,6 +85,7 @@ wss.on('connection', socket => {
       if (player.answered) return;
       player.answered = true;
       if (data.correct) player.score += Math.max(100, Number(data.points || 100));
+      else if (Number(data.levelBonus || 0) > 0) player.score += Number(data.levelBonus);
       void recordAnswer({
         name: player.name,
         series: data.series,
