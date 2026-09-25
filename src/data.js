@@ -52,4 +52,18 @@ export const questions = [
 {theme:'Mudanças climáticas', lesson:'Aula 19 · Aquecimento global', q:'O aquecimento global atual está fortemente associado...', options:['à intensificação do efeito estufa por atividades humanas','à ausência total de gases na atmosfera','somente às fases da Lua','à rotação da Terra'], answer:0, explain:'A queima de combustíveis fósseis e o desmatamento aumentam gases de efeito estufa.'},
 {theme:'Mudanças climáticas', lesson:'Aula 20 · Equilíbrio ambiental', q:'Uma decisão ambientalmente responsável em uma escola seria...', options:['deixar luzes acesas sem necessidade','reduzir desperdícios, separar resíduos e acompanhar o consumo','usar mais descartáveis','eliminar áreas verdes'], answer:1, explain:'Ações coletivas de redução, reutilização, reciclagem e uso eficiente de energia têm impacto positivo.'}
 ];
+export const questionImages = [
+  '/assets/question-01-rotation.webp',
+  '/assets/question-02-seasons.webp',
+  '/assets/question-03-moon-phases.webp',
+  '/assets/question-04-solar-eclipse.webp',
+  '/assets/question-05-weather-climate.webp',
+  '/assets/question-06-barometer.webp',
+  '/assets/question-07-rain-gauge.webp',
+  '/assets/question-08-atmospheric-convection.webp',
+  '/assets/question-09-el-nino-la-nina.webp',
+  '/assets/question-10-climate-action.webp',
+  '/assets/question-11-greenhouse-effect.webp',
+  '/assets/question-12-school-sustainability.webp'
+];
 export const themes = [...new Set(questions.map(question => question.theme))];
