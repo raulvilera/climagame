@@ -21,3 +21,8 @@
 .answer.selected.correct,.answer.selected.wrong{background:#071b30;color:#fff;border-color:#315b78;border-bottom-color:#020b14}
 .answer.selected.correct .answer-letter,.answer.selected.wrong .answer-letter{color:#fff;background:#123653}
 .answer.dim{transform:translateY(0);box-shadow:none}
+
+/* Fundo astronômico animado: discreto para manter textos e cartões legíveis. */
+body{position:relative;background:radial-gradient(circle at 75% 5%,#123655 0,transparent 32%),radial-gradient(circle at 0 100%,#162b45 0,transparent 30%),#07111f}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(rgba(4,13,28,.7),rgba(4,13,28,.82)),url('/assets/astronomy-background.gif') center/cover no-repeat;opacity:.52}
+#root{position:relative;z-index:1}
