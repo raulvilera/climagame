@@ -36,7 +36,7 @@ function broadcast(code, payload) {
 }
 function snapshot(room) {
   return [...room.players.values()]
-    .map(({ id, name, score, answered }) => ({ id, name, score, answered }))
+    .map(({ id, name, avatar, score, answered }) => ({ id, name, avatar, score, answered }))
     .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
 }
 function sendState(code) {
@@ -73,7 +73,7 @@ wss.on('connection', socket => {
       roomCode = String(data.room || 'AULA-8').toUpperCase().slice(0, 12);
       playerId = crypto.randomUUID();
       const room = roomFor(roomCode);
-      room.players.set(playerId, { id: playerId, socket, name: String(data.name || 'Explorador'), score: 0, answered: false });
+      room.players.set(playerId, { id: playerId, socket, name: String(data.name || 'Explorador'), avatar: String(data.avatar || 'astronauta'), score: 0, answered: false });
       socket.send(JSON.stringify({ type: 'joined', id: playerId, room: roomCode }));
       sendState(roomCode);
     }
